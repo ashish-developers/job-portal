@@ -2,9 +2,9 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const Application = sequelize.define('Application', {
-  id:             { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-  job_id:         { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-  seeker_id:      { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+  id:             { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  job_id:         { type: DataTypes.INTEGER, allowNull: false },
+  seeker_id:      { type: DataTypes.INTEGER, allowNull: false },
   status:         {
     type: DataTypes.ENUM('applied','screening','shortlisted','interview_scheduled','offer_extended','hired','rejected','withdrawn'),
     defaultValue: 'applied',

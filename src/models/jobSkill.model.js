@@ -2,9 +2,9 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const JobSkill = sequelize.define('JobSkill', {
-  id:       { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-  job_id:   { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-  skill_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+  id:       { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  job_id:   { type: DataTypes.INTEGER, allowNull: false },
+  skill_id: { type: DataTypes.INTEGER, allowNull: false },
 }, {
   tableName: 'job_skills',
   underscored: true,
