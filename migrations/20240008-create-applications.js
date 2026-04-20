@@ -7,7 +7,7 @@ module.exports = {
       job_id:         { type: Sequelize.INTEGER, allowNull: false, references: { model: 'jobs', key: 'id' }, onDelete: 'CASCADE' },
       seeker_id:      { type: Sequelize.INTEGER, allowNull: false, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
       status:         {
-        type: Sequelize.ENUM('applied','screening','shortlisted','interview_scheduled','offer_extended','hired','rejected','withdrawn'),
+        type: Sequelize.STRING(50),
         defaultValue: 'applied',
       },
       cover_letter:   { type: Sequelize.TEXT },

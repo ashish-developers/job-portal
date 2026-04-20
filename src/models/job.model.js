@@ -23,7 +23,7 @@ const Job = sequelize.define('Job', {
   salary_disclosed:    { type: DataTypes.BOOLEAN, defaultValue: true },
   notice_period_id:    { type: DataTypes.INTEGER },
   openings:            { type: DataTypes.INTEGER, defaultValue: 1 },
-  status:              { type: DataTypes.ENUM('draft','published','paused','closed','expired'), defaultValue: 'draft' },
+  status:              { type: DataTypes.STRING(50), defaultValue: 'draft' },
   expires_at:          { type: DataTypes.DATE },
   published_at:        { type: DataTypes.DATE },
   created_by:          { type: DataTypes.INTEGER },

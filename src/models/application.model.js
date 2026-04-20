@@ -6,7 +6,7 @@ const Application = sequelize.define('Application', {
   job_id:         { type: DataTypes.INTEGER, allowNull: false },
   seeker_id:      { type: DataTypes.INTEGER, allowNull: false },
   status:         {
-    type: DataTypes.ENUM('applied','screening','shortlisted','interview_scheduled','offer_extended','hired','rejected','withdrawn'),
+    type: DataTypes.STRING(50),
     defaultValue: 'applied',
   },
   cover_letter:   { type: DataTypes.TEXT },

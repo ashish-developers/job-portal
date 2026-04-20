@@ -35,7 +35,7 @@ module.exports = {
       id:               { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
       role_title:       { type: Sequelize.STRING(100), allowNull: false },
       dept_id:          { type: Sequelize.INTEGER, references: { model: 'departments', key: 'id' } },
-      experience_level: { type: Sequelize.ENUM('entry','mid','senior','lead','executive') },
+      experience_level: { type: Sequelize.STRING(50) },
       is_active:        { type: Sequelize.BOOLEAN, defaultValue: true },
       is_approved:      { type: Sequelize.BOOLEAN, defaultValue: false },
       created_at: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
@@ -45,7 +45,7 @@ module.exports = {
     await queryInterface.createTable('skills', {
       id:         { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
       skill_name: { type: Sequelize.STRING(100), allowNull: false, unique: true },
-      skill_type: { type: Sequelize.ENUM('TECHNICAL','SOFT','DOMAIN') },
+      skill_type: { type: Sequelize.STRING(50) },
       category:   { type: Sequelize.STRING(100) },
       is_active:  { type: Sequelize.BOOLEAN, defaultValue: true },
       usage_count: { type: Sequelize.INTEGER, defaultValue: 0 },

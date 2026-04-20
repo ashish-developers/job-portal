@@ -6,7 +6,7 @@ const Permission = sequelize.define('Permission', {
   name:   { type: DataTypes.STRING(100), allowNull: false },
   slug:   { type: DataTypes.STRING(100), allowNull: false, unique: true },
   module: { type: DataTypes.STRING(100), allowNull: false },
-  action: { type: DataTypes.ENUM('create', 'read', 'update', 'delete'), allowNull: false },
+  action: { type: DataTypes.STRING(50), allowNull: false },
 }, { tableName: 'permissions', timestamps: false });
 
 module.exports = Permission;

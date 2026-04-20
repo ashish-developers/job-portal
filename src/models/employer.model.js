@@ -28,7 +28,7 @@ const Employer = sequelize.define('Employer', {
   contact_designation: { type: DataTypes.STRING(150) },
   contact_phone:       { type: DataTypes.STRING(20) },
   // Verification workflow: PENDING → UNDER_REVIEW → VERIFIED / REJECTED
-  verification_status: { type: DataTypes.ENUM('PENDING', 'UNDER_REVIEW', 'VERIFIED', 'REJECTED'), defaultValue: 'PENDING' },
+  verification_status: { type: DataTypes.STRING(50), defaultValue: 'PENDING' },
   verification_note:   { type: DataTypes.TEXT },          // admin rejection reason
   verified_by:         { type: DataTypes.INTEGER },       // admin user_id
   verified_at:         { type: DataTypes.DATE },

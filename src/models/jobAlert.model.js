@@ -6,7 +6,7 @@ const JobAlert = sequelize.define('JobAlert', {
   user_id:      { type: DataTypes.INTEGER, allowNull: false },
   name:         { type: DataTypes.STRING(150), allowNull: false },
   filters:      { type: DataTypes.JSON, allowNull: false },
-  frequency:    { type: DataTypes.ENUM('instant','daily','weekly'), defaultValue: 'daily' },
+  frequency:    { type: DataTypes.STRING(50), defaultValue: 'daily' },
   is_active:    { type: DataTypes.BOOLEAN, defaultValue: true },
   last_sent_at: { type: DataTypes.DATE },
 }, {

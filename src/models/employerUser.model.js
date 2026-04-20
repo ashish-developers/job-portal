@@ -9,7 +9,7 @@ const EmployerUser = sequelize.define('EmployerUser', {
   email:               { type: DataTypes.STRING(255), allowNull: false, unique: true },
   password:            { type: DataTypes.STRING(255), allowNull: false },
   is_admin:            { type: DataTypes.BOOLEAN, defaultValue: false },
-  status:              { type: DataTypes.ENUM('active', 'inactive'), defaultValue: 'active' },
+  status:              { type: DataTypes.STRING(50), defaultValue: 'active' },
   reset_token:         { type: DataTypes.STRING(255) },
   reset_token_expires: { type: DataTypes.DATE },
 }, { tableName: 'employer_users', timestamps: true });

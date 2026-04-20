@@ -24,7 +24,7 @@ module.exports = {
       salary_disclosed:    { type: Sequelize.BOOLEAN, defaultValue: true },
       notice_period_id:    { type: Sequelize.INTEGER, references: { model: 'notice_periods', key: 'id' } },
       openings:            { type: Sequelize.INTEGER, defaultValue: 1 },
-      status:              { type: Sequelize.ENUM('draft','published','paused','closed','expired'), defaultValue: 'draft' },
+      status:              { type: Sequelize.STRING(50), defaultValue: 'draft' },
       expires_at:          { type: Sequelize.DATE },
       published_at:        { type: Sequelize.DATE },
       created_by:          { type: Sequelize.INTEGER, references: { model: 'employer_users', key: 'id' } },

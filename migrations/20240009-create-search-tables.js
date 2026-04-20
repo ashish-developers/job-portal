@@ -26,7 +26,7 @@ module.exports = {
       user_id:      { type: Sequelize.INTEGER, allowNull: false, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
       name:         { type: Sequelize.STRING(150), allowNull: false },
       filters:      { type: Sequelize.JSON, allowNull: false },
-      frequency:    { type: Sequelize.ENUM('instant','daily','weekly'), defaultValue: 'daily' },
+      frequency:    { type: Sequelize.STRING(50), defaultValue: 'daily' },
       is_active:    { type: Sequelize.BOOLEAN, defaultValue: true },
       last_sent_at: { type: Sequelize.DATE },
       created_at:   { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
