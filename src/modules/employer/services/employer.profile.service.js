@@ -66,6 +66,7 @@ const createProfile = async (userId, body) => {
 const getProfile = async (employerId) => {
   const employer = await Employer.findByPk(employerId, {
     include: [{ association: 'user', attributes: ['name', 'email', 'mobile'] }],
+    logging: console.log,
   });
   if (!employer) throw Object.assign(new Error('Employer not found'), { status: 404 });
   return employer;

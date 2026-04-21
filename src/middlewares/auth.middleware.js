@@ -29,6 +29,8 @@ const employerAuthenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(header.split(' ')[1], process.env.JWT_SECRET);
+    if (!decoded.employer_id)
+      return res.status(401).json({ success: false, message: 'Use employer login token for this endpoint' });
     req.user_id     = decoded.id;
     req.employer_id = decoded.employer_id;
     req.is_admin    = decoded.is_admin;

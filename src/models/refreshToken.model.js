@@ -9,6 +9,7 @@ const RefreshToken = sequelize.define('RefreshToken', {
   is_revoked: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, {
   tableName: 'refresh_tokens',
+  underscored: true,
   updatedAt: false,
 });
 

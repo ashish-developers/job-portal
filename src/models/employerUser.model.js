@@ -12,6 +12,6 @@ const EmployerUser = sequelize.define('EmployerUser', {
   status:              { type: DataTypes.STRING(50), defaultValue: 'active' },
   reset_token:         { type: DataTypes.STRING(255) },
   reset_token_expires: { type: DataTypes.DATE },
-}, { tableName: 'employer_users', timestamps: true });
+}, { tableName: 'employer_users', timestamps: true, underscored: true });
 
 module.exports = EmployerUser;

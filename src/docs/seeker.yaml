@@ -1,0 +1,329 @@
+paths:
+  # ── Profile ────────────────────────────────────────────────────────────────────
+  /api/v1/seeker/profile:
+    get:
+      tags: [Seeker Profile]
+      summary: Get seeker profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Seeker profile
+        '401':
+          description: Unauthorized
+
+    put:
+      tags: [Seeker Profile]
+      summary: Update seeker profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                headline: { type: string }
+                summary: { type: string }
+                current_title: { type: string }
+                total_experience_years: { type: number }
+                current_salary: { type: number }
+                expected_salary: { type: number }
+                currency_id: { type: integer }
+                notice_period_id: { type: integer }
+                city_id: { type: integer }
+                work_mode_id: { type: integer }
+                profile_photo_url: { type: string, format: uri }
+                resume_url: { type: string, format: uri }
+                linkedin_url: { type: string, format: uri }
+                github_url: { type: string, format: uri }
+                portfolio_url: { type: string, format: uri }
+                is_actively_looking: { type: boolean }
+      responses:
+        '200':
+          description: Profile updated
+
+  # ── Experience ─────────────────────────────────────────────────────────────────
+  /api/v1/seeker/profile/experience:
+    post:
+      tags: [Seeker Profile]
+      summary: Add work experience
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceInput'
+      responses:
+        '201':
+          description: Experience added
+
+  /api/v1/seeker/profile/experience/{id}:
+    put:
+      tags: [Seeker Profile]
+      summary: Update work experience
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceInput'
+      responses:
+        '200':
+          description: Experience updated
+
+    delete:
+      tags: [Seeker Profile]
+      summary: Delete work experience
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Experience deleted
+
+  # ── Education ──────────────────────────────────────────────────────────────────
+  /api/v1/seeker/profile/education:
+    post:
+      tags: [Seeker Profile]
+      summary: Add education
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationInput'
+      responses:
+        '201':
+          description: Education added
+
+  /api/v1/seeker/profile/education/{id}:
+    put:
+      tags: [Seeker Profile]
+      summary: Update education
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationInput'
+      responses:
+        '200':
+          description: Education updated
+
+    delete:
+      tags: [Seeker Profile]
+      summary: Delete education
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Education deleted
+
+  # ── Skills ─────────────────────────────────────────────────────────────────────
+  /api/v1/seeker/profile/skills:
+    post:
+      tags: [Seeker Profile]
+      summary: Add skills
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [skills]
+              properties:
+                skills:
+                  type: array
+                  items:
+                    type: object
+                    required: [skill_id]
+                    properties:
+                      skill_id: { type: integer }
+                      proficiency:
+                        type: string
+                        enum: [beginner, intermediate, advanced, expert]
+                        default: intermediate
+                  example: [{ skill_id: 1, proficiency: advanced }, { skill_id: 5 }]
+      responses:
+        '200':
+          description: Skills added
+
+  /api/v1/seeker/profile/skills/{skillId}:
+    delete:
+      tags: [Seeker Profile]
+      summary: Remove skill
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: skillId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Skill removed
+
+  # ── Applications ───────────────────────────────────────────────────────────────
+  /api/v1/seeker/applications:
+    get:
+      tags: [Seeker Applications]
+      summary: Get my applications
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [applied, reviewing, shortlisted, rejected, hired, withdrawn] }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: List of applications
+
+  /api/v1/seeker/applications/{jobId}:
+    post:
+      tags: [Seeker Applications]
+      summary: Apply for a job
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cover_letter: { type: string }
+                resume_url: { type: string, format: uri, description: Overrides profile resume if provided }
+      responses:
+        '201':
+          description: Application submitted
+        '409':
+          description: Already applied
+
+  /api/v1/seeker/applications/{id}/withdraw:
+    patch:
+      tags: [Seeker Applications]
+      summary: Withdraw application
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Application withdrawn
+
+  /api/v1/seeker/jobs/{jobId}/applications:
+    get:
+      tags: [Seeker Applications]
+      summary: View applications for a job (employer)
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: Applications list
+
+  /api/v1/seeker/applications/{id}/status:
+    patch:
+      tags: [Seeker Applications]
+      summary: Update application status (employer)
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [applied, screening, shortlisted, interview_scheduled, offer_extended, hired, rejected, withdrawn]
+                employer_notes:
+                  type: string
+      responses:
+        '200':
+          description: Status updated
+
+components:
+  schemas:
+    ExperienceInput:
+      type: object
+      required: [job_title, company_name, start_date]
+      properties:
+        job_title: { type: string, example: Software Engineer }
+        company_name: { type: string, example: Acme Corp }
+        description: { type: string }
+        start_date: { type: string, format: date, example: '2020-01-01' }
+        end_date: { type: string, format: date, example: '2023-06-01' }
+        is_current: { type: boolean, default: false }
+        city_id: { type: integer }
+        employment_type_id: { type: integer }
+
+    EducationInput:
+      type: object
+      required: [institution_name, start_year]
+      properties:
+        institution_name: { type: string, example: MIT }
+        field_of_study: { type: string, example: Computer Science }
+        start_year: { type: integer, example: 2016 }
+        end_year: { type: integer, example: 2020 }
+        is_current: { type: boolean, default: false }
+        grade: { type: string, example: 'A' }
+        qualification_id: { type: integer }

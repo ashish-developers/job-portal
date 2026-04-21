@@ -1,0 +1,223 @@
+paths:
+  /api/v1/jobs/search:
+    get:
+      tags: [Jobs]
+      summary: Search jobs (public)
+      parameters:
+        - in: query
+          name: query
+          schema: { type: string }
+          description: Full-text search keyword
+        - in: query
+          name: locationId
+          schema: { type: integer }
+        - in: query
+          name: industryId
+          schema: { type: integer }
+        - in: query
+          name: employmentTypeId
+          schema: { type: integer }
+        - in: query
+          name: experienceLevelId
+          schema: { type: integer }
+        - in: query
+          name: workModeId
+          schema: { type: integer }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated job list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      jobs: { type: array, items: { $ref: '#/components/schemas/JobSummary' } }
+                      total: { type: integer }
+                      page: { type: integer }
+                      pages: { type: integer }
+
+  /api/v1/jobs/view/{slug}:
+    get:
+      tags: [Jobs]
+      summary: Get job by slug (public)
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: { type: string }
+          example: senior-backend-engineer-acme-corp
+      responses:
+        '200':
+          description: Job detail
+        '404':
+          description: Job not found
+
+  /api/v1/jobs:
+    get:
+      tags: [Jobs]
+      summary: List my jobs (employer)
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [draft, published, closed] }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Employer's job list
+        '401':
+          description: Unauthorized
+
+    post:
+      tags: [Jobs]
+      summary: Create job posting
+      security:
+        - EmployerBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobInput'
+      responses:
+        '201':
+          description: Job created
+        '422':
+          description: Validation error
+
+  /api/v1/jobs/{id}:
+    get:
+      tags: [Jobs]
+      summary: Get job by ID (employer)
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Job detail
+        '404':
+          description: Not found
+
+    put:
+      tags: [Jobs]
+      summary: Update job
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobInput'
+      responses:
+        '200':
+          description: Job updated
+
+    delete:
+      tags: [Jobs]
+      summary: Delete job
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Job deleted
+
+  /api/v1/jobs/{id}/publish:
+    patch:
+      tags: [Jobs]
+      summary: Publish job
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Job published
+
+  /api/v1/jobs/{id}/close:
+    patch:
+      tags: [Jobs]
+      summary: Close job
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Job closed
+
+components:
+  schemas:
+    JobSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        status: { type: string }
+        companyName: { type: string }
+        city: { type: string }
+        workMode: { type: string }
+        employmentType: { type: string }
+        experienceLevel: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    JobInput:
+      type: object
+      required: [title, description]
+      properties:
+        title: { type: string, example: Senior Backend Engineer }
+        description: { type: string }
+        requirements: { type: string }
+        responsibilities: { type: string }
+        salaryMin: { type: number }
+        salaryMax: { type: number }
+        currencyId: { type: integer }
+        cityId: { type: integer }
+        workModeId: { type: integer }
+        employmentTypeId: { type: integer }
+        experienceLevelId: { type: integer }
+        educationLevelId: { type: integer }
+        noticePeriodId: { type: integer }
+        departmentId: { type: integer }
+        jobRoleId: { type: integer }
+        skills:
+          type: array
+          items: { type: integer }
+          description: Array of skill IDs

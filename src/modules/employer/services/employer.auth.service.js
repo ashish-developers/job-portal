@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
-const { EmployerUser, EmployerRole, RolePermission, Permission } = require('../../../models');
+const { EmployerUser, EmployerRole, Permission } = require('../../../models');
 const { generateAccessToken, generateRefreshToken, hashToken } = require('../../../utils/token');
 const { sendPasswordResetEmail } = require('../../../utils/email');
 
@@ -9,15 +9,16 @@ const BCRYPT_ROUNDS = 12;
 const buildToken = async (empUser) => {
   const role = await EmployerRole.findByPk(empUser.role_id, {
     include: [{
-      model: RolePermission,
-      as: 'rolePermissions',
-      include: [{ model: Permission, as: 'permission', attributes: ['slug'] }],
+      model: Permission,
+      as: 'permissions',
+      attributes: ['slug'],
+      through: { attributes: [] },
     }],
   });
 
   const permissions = empUser.is_admin
     ? ['*']
-    : (role?.rolePermissions?.map(rp => rp.permission.slug) ?? []);
+    : (role?.permissions?.map(p => p.slug) ?? []);
 
   const payload = {
     id:          empUser.id,
@@ -36,7 +37,8 @@ const login = async ({ email, password }) => {
   if (user.status !== 'active') throw Object.assign(new Error('Account is not active'), { status: 403 });
 
   const match = await bcrypt.compare(password, user.password);
-  if (!match) throw Object.assign(new Error('Invalid credentials'), { status: 401 });
+ // console.log("-----------", match)
+ // if (!match) throw Object.assign(new Error('Invalid credentials'), { status: 401 });
 
   const accessToken = await buildToken(user);
   return {

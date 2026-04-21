@@ -1,0 +1,294 @@
+paths:
+  /api/v1/search/jobs:
+    get:
+      tags: [Search]
+      summary: Search jobs (public / optional auth)
+      security: []
+      parameters:
+        - in: query
+          name: query
+          schema: { type: string }
+          description: Keyword search
+        - in: query
+          name: cityId
+          schema: { type: integer }
+        - in: query
+          name: industryId
+          schema: { type: integer }
+        - in: query
+          name: workModeId
+          schema: { type: integer }
+        - in: query
+          name: employmentTypeId
+          schema: { type: integer }
+        - in: query
+          name: experienceLevelId
+          schema: { type: integer }
+        - in: query
+          name: salaryMin
+          schema: { type: number }
+        - in: query
+          name: salaryMax
+          schema: { type: number }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated job results
+
+  /api/v1/search/jobs/recommendations:
+    get:
+      tags: [Search]
+      summary: Get personalised job recommendations (seeker)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Recommended jobs
+
+  /api/v1/search/jobs/{jobId}/match-score:
+    get:
+      tags: [Search]
+      summary: Get match score for a job (seeker)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Match score
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  score: { type: number, example: 78.5 }
+                  breakdown: { type: object }
+
+  /api/v1/search/saved-jobs/{jobId}:
+    post:
+      tags: [Search]
+      summary: Save a job
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: integer }
+      responses:
+        '201':
+          description: Job saved
+
+    delete:
+      tags: [Search]
+      summary: Unsave a job
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Job unsaved
+
+  /api/v1/search/saved-jobs:
+    get:
+      tags: [Search]
+      summary: List saved jobs
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Saved jobs list
+
+  /api/v1/search/saved-jobs/{jobId}/is-saved:
+    get:
+      tags: [Search]
+      summary: Check if a job is saved
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Saved status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSaved: { type: boolean }
+
+  /api/v1/search/saved-searches:
+    post:
+      tags: [Search]
+      summary: Create saved search
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, filters]
+              properties:
+                name: { type: string, example: Remote Node.js jobs }
+                filters: { type: object, description: Same query params as GET /search/jobs }
+      responses:
+        '201':
+          description: Saved search created
+
+    get:
+      tags: [Search]
+      summary: List saved searches
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Saved searches
+
+  /api/v1/search/saved-searches/{id}:
+    delete:
+      tags: [Search]
+      summary: Delete saved search
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Deleted
+
+  /api/v1/search/job-alerts:
+    post:
+      tags: [Search]
+      summary: Create job alert
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, filters, frequency]
+              properties:
+                name: { type: string }
+                filters: { type: object }
+                frequency:
+                  type: string
+                  enum: [daily, weekly]
+      responses:
+        '201':
+          description: Alert created
+
+    get:
+      tags: [Search]
+      summary: List job alerts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Job alerts
+
+  /api/v1/search/job-alerts/{id}:
+    patch:
+      tags: [Search]
+      summary: Update job alert
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                filters: { type: object }
+                frequency: { type: string, enum: [daily, weekly] }
+                isActive: { type: boolean }
+      responses:
+        '200':
+          description: Alert updated
+
+    delete:
+      tags: [Search]
+      summary: Delete job alert
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Alert deleted
+
+  /api/v1/search/candidates:
+    get:
+      tags: [Search]
+      summary: Search candidates (employer)
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: query
+          name: query
+          schema: { type: string }
+        - in: query
+          name: skillIds
+          schema: { type: string }
+          description: Comma-separated skill IDs
+        - in: query
+          name: experienceLevelId
+          schema: { type: integer }
+        - in: query
+          name: cityId
+          schema: { type: integer }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: Candidate list
+
+  /api/v1/search/candidates/for-job/{jobId}:
+    get:
+      tags: [Search]
+      summary: Get matched candidates for a job (employer)
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: Matched candidates with scores

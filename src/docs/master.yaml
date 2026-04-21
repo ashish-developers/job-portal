@@ -1,0 +1,160 @@
+paths:
+  /api/v1/master:
+    get:
+      tags: [Master Data]
+      summary: List available master resource names
+      responses:
+        '200':
+          description: Array of resource names
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resources:
+                    type: array
+                    items: { type: string }
+                    example:
+                      - industry
+                      - department
+                      - jobRole
+                      - skill
+                      - employmentType
+                      - experienceLevel
+                      - educationLevel
+                      - qualification
+                      - currency
+                      - city
+                      - workMode
+                      - noticePeriod
+                      - companySize
+
+  /api/v1/master/{resource}:
+    get:
+      tags: [Master Data]
+      summary: Get all records for a master resource (active only by default)
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema: { type: string }
+          example: skill
+        - in: query
+          name: all
+          schema: { type: boolean }
+          description: Pass true (admin only) to include inactive records
+      responses:
+        '200':
+          description: List of records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MasterRecord'
+        '404':
+          description: Unknown resource
+
+    post:
+      tags: [Master Data]
+      summary: Create a master record (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, example: Artificial Intelligence }
+                isActive: { type: boolean, default: true }
+      responses:
+        '201':
+          description: Record created
+        '403':
+          description: Forbidden — admin only
+
+  /api/v1/master/{resource}/{id}:
+    get:
+      tags: [Master Data]
+      summary: Get a single master record
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Record found
+        '404':
+          description: Not found
+
+    put:
+      tags: [Master Data]
+      summary: Update a master record (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                isActive: { type: boolean }
+      responses:
+        '200':
+          description: Record updated
+
+    delete:
+      tags: [Master Data]
+      summary: Delete a master record (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Record deleted
+
+components:
+  schemas:
+    MasterRecord:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        isActive: { type: boolean }
+        createdAt: { type: string, format: date-time }

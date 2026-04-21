@@ -1,0 +1,387 @@
+paths:
+  # ── Employer Auth ──────────────────────────────────────────────────────────────
+  /api/v1/employer/auth/login:
+    post:
+      tags: [Employer Auth]
+      summary: Employer sub-user login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful — returns employer JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  token: { type: string }
+        '401':
+          description: Invalid credentials
+
+  /api/v1/employer/auth/forgot-password:
+    post:
+      tags: [Employer Auth]
+      summary: Employer password reset request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200':
+          description: Reset email sent
+
+  /api/v1/employer/auth/reset-password:
+    post:
+      tags: [Employer Auth]
+      summary: Reset employer password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, token, password]
+              properties:
+                email: { type: string, format: email }
+                token: { type: string }
+                password: { type: string, minLength: 8 }
+      responses:
+        '200':
+          description: Password reset successful
+
+  /api/v1/employer/auth/me:
+    get:
+      tags: [Employer Auth]
+      summary: Get current employer user profile
+      security:
+        - EmployerBearerAuth: []
+      responses:
+        '200':
+          description: Employer user profile
+        '401':
+          description: Unauthorized
+
+  # ── Employer Profile ───────────────────────────────────────────────────────────
+  /api/v1/employer/profile:
+    post:
+      tags: [Employer Profile]
+      summary: Create company profile (employer role)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_name, company_email]
+              properties:
+                company_name: { type: string, example: Acme Corp }
+                company_email: { type: string, format: email, example: hr@acme.com }
+                company_phone: { type: string, example: '+911234567890' }
+                industry_id: { type: integer }
+                company_size_id: { type: integer }
+                gst_number: { type: string }
+                cin_number: { type: string }
+                website_url: { type: string, format: uri }
+                description: { type: string }
+                founded_year: { type: integer, example: 2010 }
+                headquarters_city: { type: string }
+                company_address: { type: string }
+                contact_name: { type: string }
+                contact_designation: { type: string }
+                contact_phone: { type: string }
+                linkedin_url: { type: string, format: uri }
+                twitter_url: { type: string, format: uri }
+                glassdoor_url: { type: string, format: uri }
+                admin_password: { type: string, minLength: 8, description: Password for the admin sub-user (defaults to email if omitted) }
+      responses:
+        '201':
+          description: Company profile created
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+    get:
+      tags: [Employer Profile]
+      summary: Get company profile
+      security:
+        - EmployerBearerAuth: []
+      responses:
+        '200':
+          description: Company profile
+
+    put:
+      tags: [Employer Profile]
+      summary: Update company profile
+      security:
+        - EmployerBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_name: { type: string }
+                company_phone: { type: string }
+                industry_id: { type: integer }
+                company_size_id: { type: integer }
+                gst_number: { type: string }
+                cin_number: { type: string }
+                website_url: { type: string, format: uri }
+                logo_url: { type: string, format: uri }
+                description: { type: string }
+                founded_year: { type: integer }
+                headquarters_city: { type: string }
+                company_address: { type: string }
+                contact_name: { type: string }
+                contact_designation: { type: string }
+                contact_phone: { type: string }
+                linkedin_url: { type: string, format: uri }
+                twitter_url: { type: string, format: uri }
+                glassdoor_url: { type: string, format: uri }
+      responses:
+        '200':
+          description: Profile updated
+
+  /api/v1/employer/profile/{id}/verification:
+    patch:
+      tags: [Employer Profile]
+      summary: Update verification status (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [UNDER_REVIEW, VERIFIED, REJECTED]
+                note:
+                  type: string
+                  description: Rejection reason (optional)
+      responses:
+        '200':
+          description: Verification status updated
+        '403':
+          description: Forbidden — admin only
+
+  # ── Employer Roles ─────────────────────────────────────────────────────────────
+  /api/v1/employer/roles:
+    get:
+      tags: [Employer Roles]
+      summary: List roles
+      security:
+        - EmployerBearerAuth: []
+      responses:
+        '200':
+          description: List of roles
+
+    post:
+      tags: [Employer Roles]
+      summary: Create role
+      security:
+        - EmployerBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, example: HR Manager }
+                permissions: { type: array, items: { type: string } }
+      responses:
+        '201':
+          description: Role created
+
+  /api/v1/employer/roles/{id}:
+    put:
+      tags: [Employer Roles]
+      summary: Update role
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+      responses:
+        '200':
+          description: Role updated
+
+    delete:
+      tags: [Employer Roles]
+      summary: Delete role
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Role deleted
+
+  /api/v1/employer/roles/{id}/permissions/add:
+    post:
+      tags: [Employer Roles]
+      summary: Add permissions to role
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [permissions]
+              properties:
+                permissions:
+                  type: array
+                  items: { type: string }
+                  example: [jobs:create, jobs:edit]
+      responses:
+        '200':
+          description: Permissions added
+
+  /api/v1/employer/roles/{id}/permissions/remove:
+    post:
+      tags: [Employer Roles]
+      summary: Remove permissions from role
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [permissions]
+              properties:
+                permissions:
+                  type: array
+                  items: { type: string }
+                  example: [jobs:delete]
+      responses:
+        '200':
+          description: Permissions removed
+
+  # ── Employer Users ─────────────────────────────────────────────────────────────
+  /api/v1/employer/users:
+    get:
+      tags: [Employer Users]
+      summary: List sub-users
+      security:
+        - EmployerBearerAuth: []
+      responses:
+        '200':
+          description: List of sub-users
+
+    post:
+      tags: [Employer Users]
+      summary: Create sub-user
+      security:
+        - EmployerBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role_id]
+              properties:
+                name: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                role_id: { type: integer }
+      responses:
+        '201':
+          description: Sub-user created
+
+  /api/v1/employer/users/{id}:
+    put:
+      tags: [Employer Users]
+      summary: Update sub-user
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                role_id: { type: integer }
+                status: { type: string, enum: [active, inactive] }
+      responses:
+        '200':
+          description: Sub-user updated
+
+    delete:
+      tags: [Employer Users]
+      summary: Delete sub-user
+      security:
+        - EmployerBearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Sub-user deleted

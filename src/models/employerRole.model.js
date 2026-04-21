@@ -7,6 +7,6 @@ const EmployerRole = sequelize.define('EmployerRole', {
   name:        { type: DataTypes.STRING(100), allowNull: false },
   description: { type: DataTypes.STRING(255) },
   is_default:  { type: DataTypes.BOOLEAN, defaultValue: false },
-}, { tableName: 'employer_roles', timestamps: true });
+}, { tableName: 'employer_roles', timestamps: true, underscored: true });
 
 module.exports = EmployerRole;

@@ -36,6 +36,7 @@ const Employer = sequelize.define('Employer', {
 }, {
   tableName: 'employers',
   timestamps: true,
+  underscored: true,
 });
 
 module.exports = Employer;
