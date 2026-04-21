@@ -27,7 +27,7 @@ const register = async ({ name, email, password, mobile, role = 'employer' }) =>
   if (exists) throw Object.assign(new Error('Email already registered'), { status: 409 });
 
   const hashed = await bcrypt.hash(password, BCRYPT_ROUNDS);
-  const otp    = generateOtp();
+  const otp    = 111111; //generateOtp();
   const otpExp = new Date(Date.now() + 30 * 60 * 1000); // 30 min
 
   const user = await User.create({
@@ -38,7 +38,7 @@ const register = async ({ name, email, password, mobile, role = 'employer' }) =>
     email_verify_expires: otpExp,
   });
 
-  await sendVerificationEmail({ to: email, name, otp });
+  //await sendVerificationEmail({ to: email, name, otp });
 
   return { id: user.id, email: user.email, role: user.role, status: user.status };
 };
