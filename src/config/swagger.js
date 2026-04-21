@@ -9,7 +9,7 @@ const options = {
       description: 'REST API for the Job Portal platform — seekers, employers, and job management.',
     },
     servers: [
-      { url: 'http://localhost:3000', description: 'Local development' },
+      { url: 'http://api.precisionsystem.in', description: 'Local development' },
     ],
     components: {
       securitySchemes: {
